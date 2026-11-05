@@ -10,7 +10,7 @@ from HTML attributes; Next and static sites alike; no dependencies.
 ```
 
 ```sh
-npm install github:omisilli/loading-progress#v1.1.0
+npm install github:omisilli/loading-progress#v1.2.0
 ```
 
 ```ts
@@ -29,14 +29,14 @@ Or the CSS from CSS, which lets you pick the cascade layer:
 ### Without a build step
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.1.0/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.2.0/index.css" />
 <script type="module">
-    import { initLoadingProgress } from "https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.1.0/dist/index.js";
+    import { initLoadingProgress } from "https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.2.0/dist/index.js";
     initLoadingProgress();
 </script>
 ```
 
-Pin the version (`@v1.1.0`) on a live site. A pinned URL never changes;
+Pin the version (`@v1.2.0`) on a live site. A pinned URL never changes;
 `@1` follows the newest 1.x release.
 
 ## How long? Nobody knows
@@ -113,7 +113,7 @@ script starts.
 | Attribute                           | Default            | What                                                           |
 | ----------------------------------- | ------------------ | -------------------------------------------------------------- |
 | `data-pg-loading-progress-delay`    | `0`                | ms before it shows. Ready sooner: it never shows               |
-| `data-pg-loading-progress-duration` | `5000`             | ms to creep to 90%                                             |
+| `data-pg-loading-progress-duration` | `3000`             | ms to creep to 90%                                             |
 | `data-pg-loading-progress-easing`   | fast, then slow    | The creep's curve: `linear`, `ease-out`, `cubic-bezier(…)`     |
 | `data-pg-loading-progress-finish`   | `200`              | ms to fill once ready (the fade, 0.2s, follows)                |
 
@@ -123,7 +123,7 @@ script starts.
     <input name="q" />
     <button>Search</button>
     <!-- The button's own, for this button. -->
-    <button name="quick" value="1" data-pg-loading-progress-duration="3000">Quick search</button>
+    <button name="quick" value="1" data-pg-loading-progress-duration="1500">Quick search</button>
 </form>
 
 <!-- Every link in the menu: only if it takes longer than 0.3s. -->
@@ -131,17 +131,30 @@ script starts.
 ```
 
 No delay by default, as on YouTube — its bar shows at once, within a frame
-of the click. The creep is past half in a second and at about 83% after
-2.5 seconds, so a usual page change ends while the bar is still clearly
+of the click. The creep is past half in half a second and at three
+quarters in one, so a page change ends while the bar is still clearly
 moving:
 
-| After        | 0.2s | 0.5s | 1s  | 2.5s | 4s  |
-| ------------ | ---- | ---- | --- | ---- | --- |
-| The defaults | 21%  | 41%  | 60% | 83%  | 89% |
+| After        | 0.2s | 0.5s | 1s  | 2s  | 3s  |
+| ------------ | ---- | ---- | --- | --- | --- |
+| The defaults | 31%  | 55%  | 74% | 87% | 90% |
 
 For a page you know is slow, a longer `duration` keeps it from sitting at
-90%. A `delay` keeps the bar away from fast changes altogether; YouTube
-does not use one.
+90%.
+
+### A fast site
+
+Where pages change in a fifth of a second or less — Next prefetches its
+links — a bar that flashes on every click says nothing. A `delay` keeps it
+away from those: it shows only when a change takes longer, on a slow
+network or a heavy page. YouTube does not use one; its changes take most
+of a second. As CSS variables, so the first load has it too:
+
+```css
+[data-pg-loading-progress] {
+    --pg-loading-progress-delay: 200ms;
+}
+```
 
 ### For the first load
 
@@ -325,7 +338,7 @@ Set anywhere above the bar — media queries welcome.
 | `--pg-loading-progress-shadow`  | `none`                                    | Around the bar                        |
 | `--pg-loading-progress-z`       | `2100`                                    | Its stacking                          |
 | `--pg-loading-progress-delay`   | `0ms`                                     | See [Timing](#timing)                 |
-| `--pg-loading-progress-duration` | `5s`                                     |                                       |
+| `--pg-loading-progress-duration` | `3s`                                     |                                       |
 | `--pg-loading-progress-easing`  | `cubic-bezier(0.1, 0.7, 0.3, 1)`          |                                       |
 | `--pg-loading-progress-finish`  | `200ms`                                   |                                       |
 

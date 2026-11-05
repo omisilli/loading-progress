@@ -23,7 +23,7 @@
  * Timing — on a link, a form or anything above them (the nearest wins), on
  * the bar for every run the script starts, or in startLoading({…}):
  *   data-pg-loading-progress-delay      ms before it shows. 0
- *   data-pg-loading-progress-duration   ms to creep to 90%. 5000
+ *   data-pg-loading-progress-duration   ms to creep to 90%. 3000
  *   data-pg-loading-progress-easing     the creep's curve. Fast, then slow
  *   data-pg-loading-progress-finish     ms to fill once ready. 200
  */

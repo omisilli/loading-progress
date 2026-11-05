@@ -15,7 +15,7 @@
  * by run. The first load's creep starts before any script, so only these
  * reach it:
  *   --pg-loading-progress-delay      before it shows. 0ms
- *   --pg-loading-progress-duration   to creep to 90%. 5s
+ *   --pg-loading-progress-duration   to creep to 90%. 3s
  *   --pg-loading-progress-easing     the creep's curve. Fast, then slow
  *   --pg-loading-progress-finish     to fill once ready. 200ms
  *
@@ -52,13 +52,16 @@
 }
 
 /* Loading: shows after the delay, and creeps towards 90% — it never gets
-   further by itself. */
+   further by itself. Shown by an animation, not a transition: the first
+   paint runs no transitions, and the first load's bar is "loading" from
+   the HTML. */
 :where([data-pg-loading-progress-state="loading"]) {
     opacity: 1;
-    transition: opacity 0s linear calc(var(--pg-loading-progress-delay, 0ms) - var(--pg-loading-progress-elapsed, 0ms));
+    animation: pg-loading-progress-show 1ms linear
+        calc(var(--pg-loading-progress-delay, 0ms) - var(--pg-loading-progress-elapsed, 0ms)) backwards;
 }
 :where([data-pg-loading-progress-state="loading"])::before {
-    animation: pg-loading-progress-creep var(--pg-loading-progress-duration, 5s)
+    animation: pg-loading-progress-creep var(--pg-loading-progress-duration, 3s)
         var(--pg-loading-progress-easing, cubic-bezier(0.1, 0.7, 0.3, 1))
         calc(var(--pg-loading-progress-delay, 0ms) - var(--pg-loading-progress-elapsed, 0ms)) both;
 }
@@ -70,6 +73,12 @@
 }
 :where([data-pg-loading-progress-state="done"])::before {
     animation: pg-loading-progress-fill var(--pg-loading-progress-finish, 200ms) ease-out both;
+}
+
+@keyframes pg-loading-progress-show {
+    from {
+        opacity: 0;
+    }
 }
 
 @keyframes pg-loading-progress-creep {

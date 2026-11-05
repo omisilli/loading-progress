@@ -8,7 +8,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>loading-progress — example</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.1.0/index.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.2.0/index.css" />
         <style>
             :root {
                 --bg: #f6f6f4;
@@ -197,8 +197,8 @@
                 <ul class="list">
                     <li><a href="?page=2">Page 2</a> <span>the defaults</span></li>
                     <li>
-                        <a href="?page=slow" data-pg-loading-progress-duration="15000">Page 3</a>
-                        <span><code>-duration="15000"</code>: creeps three times slower</span>
+                        <a href="?page=slow" data-pg-loading-progress-duration="9000">Page 3</a>
+                        <span><code>-duration="9000"</code>: creeps three times slower</span>
                     </li>
                     <li>
                         <a href="?page=linear" data-pg-loading-progress-easing="linear">Page 4</a>
@@ -233,7 +233,7 @@
                 <form class="row" action="#forms" data-pg-loading-progress-duration="15000">
                     <input name="search" placeholder="Search" aria-label="Search" />
                     <button>Search</button>
-                    <button name="speed" value="quick" data-pg-loading-progress-duration="3000">Quick search</button>
+                    <button name="speed" value="quick" data-pg-loading-progress-duration="1500">Quick search</button>
                 </form>
             </section>
 
@@ -253,7 +253,7 @@
         </main>
 
         <script type="module">
-            import { initLoadingProgress, startLoading } from "https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.1.0/dist/index.js";
+            import { initLoadingProgress, startLoading } from "https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.2.0/dist/index.js";
 
             const page = new URLSearchParams(location.search);
             document.getElementById("here").textContent = page.has("search")
