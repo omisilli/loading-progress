@@ -9,6 +9,45 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>loading-progress — example</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.3.0/index.css" />
+        <!-- Demo only — the made-up wait (the box, top left). Before the
+             first paint, as the bar runs from it: reads the chosen wait and
+             times the bar for it, as variables on <html> that the CSS below
+             hands to the bar. -->
+        <script>
+            window.pgDemo = (() => {
+                const stops = [
+                    { ms: 0, name: "0s" },
+                    { ms: 200, name: "pg" },
+                    { ms: 500, name: "0.5s" },
+                    { ms: 1000, name: "1s" },
+                    { ms: 2500, name: "2.5s" },
+                    { ms: 5000, name: "5s" },
+                ];
+                // The bar for a wait of `ms`: 200ms delay, so fast pages never
+                // show it; to 90% in about 1.2 × the wait (at least 2s), so it
+                // is near 90% when the page is ready, not standing there; a
+                // gentle start for long waits.
+                const timing = (ms) => ({
+                    delay: 200,
+                    duration: Math.max(2000, Math.round((ms * 1.2) / 500) * 500),
+                    easing: ms >= 4000 ? "cubic-bezier(0.3, 0.4, 0.4, 1)" : null,
+                });
+                let ms = 1000;
+                try {
+                    const saved = Number(localStorage.getItem("pg-demo-wait"));
+                    if (localStorage.getItem("pg-demo-wait") !== null && stops.some((s) => s.ms === saved)) ms = saved;
+                } catch {
+                    // No storage: the default.
+                }
+                const t = timing(ms);
+                const root = document.documentElement.style;
+                root.setProperty("--demo-bar-delay", t.delay + "ms");
+                root.setProperty("--demo-bar-duration", t.duration + "ms");
+                if (t.easing) root.setProperty("--demo-bar-easing", t.easing);
+                document.documentElement.setAttribute("data-demo-bar", "");
+                return { stops, timing, ms };
+            })();
+        </script>
         <style>
             :root {
                 --bg: #f6f6f4;
@@ -157,12 +196,173 @@
                 border-color: transparent;
                 color: transparent;
             }
+
+            /* Demo only: the bar timed for the chosen wait, over the
+               package's defaults. An easing left unset falls back to the
+               package's. */
+            html[data-demo-bar] [data-pg-loading-progress] {
+                --pg-loading-progress-delay: var(--demo-bar-delay);
+                --pg-loading-progress-duration: var(--demo-bar-duration);
+                --pg-loading-progress-easing: var(--demo-bar-easing);
+            }
+
+            /* The made-up wait, top left. Hidden on narrow screens. */
+            .wait {
+                position: fixed;
+                top: 1rem;
+                left: 1rem;
+                z-index: 10;
+                display: none;
+                width: 36ch;
+                flex-direction: column;
+                gap: 0.375rem;
+                padding: 0.625rem 0.75rem;
+                border-radius: 0.6rem;
+                background: color-mix(in srgb, var(--fg) 88%, transparent);
+                color: var(--bg);
+                font:
+                    11px/1.5 ui-monospace,
+                    SFMono-Regular,
+                    Menlo,
+                    monospace;
+            }
+            @media (min-width: 768px) {
+                .wait {
+                    display: flex;
+                }
+            }
+            /* Until there is room beside the page's column: room above it. */
+            @media (min-width: 768px) and (max-width: 1299px) {
+                main {
+                    padding-top: 13.5rem;
+                }
+            }
+            .wait-lines {
+                white-space: pre;
+            }
+            .wait-note {
+                opacity: 0.6;
+            }
+            /* Drawn here, not the browser's: its own slider changes colour
+               under the pointer. */
+            .wait input {
+                width: 100%;
+                height: 0.875rem;
+                margin: 0;
+                padding: 0;
+                border: 0;
+                background: transparent;
+                appearance: none;
+                cursor: pointer;
+            }
+            .wait input::-webkit-slider-runnable-track {
+                height: 4px;
+                border-radius: 999px;
+                background: color-mix(in srgb, currentColor 30%, transparent);
+            }
+            .wait input::-moz-range-track {
+                height: 4px;
+                border-radius: 999px;
+                background: color-mix(in srgb, currentColor 30%, transparent);
+            }
+            .wait input::-webkit-slider-thumb {
+                width: 12px;
+                height: 12px;
+                margin-top: -4px;
+                border-radius: 50%;
+                background: currentColor;
+                appearance: none;
+            }
+            .wait input::-moz-range-thumb {
+                width: 12px;
+                height: 12px;
+                border: 0;
+                border-radius: 50%;
+                background: currentColor;
+            }
+            .wait-stops {
+                position: relative;
+                height: 1.5em;
+                font-size: 10px;
+            }
+            .wait-stops button {
+                position: absolute;
+                padding: 0;
+                border: 0;
+                background: none;
+                color: inherit;
+                opacity: 0.6;
+                cursor: pointer;
+                translate: -50% 0;
+            }
+            .wait-stops button:first-child {
+                translate: 0 0;
+            }
+            .wait-stops button:last-child {
+                translate: -100% 0;
+            }
+            .wait-stops button[aria-pressed="true"] {
+                opacity: 1;
+                text-decoration: underline;
+            }
         </style>
     </head>
     <body>
         <!-- The bar. Written "loading", it runs from the first paint — before
              any script — and fills once the page is ready. -->
         <div data-pg-loading-progress data-pg-loading-progress-state="loading"></div>
+
+        <!-- Demo only: how long the cards' "data" takes — made up, and
+             changeable. Stops only; letting go reloads the page. -->
+        <aside class="wait" aria-label="Made-up wait">
+            <p class="wait-lines" id="wait-lines"></p>
+            <p class="wait-note">made up — demo only</p>
+            <input type="range" id="wait-range" min="0" max="5" step="1" aria-label="Wait" />
+            <div class="wait-stops" id="wait-stops"></div>
+        </aside>
+        <script>
+            // Filled before the first paint, so it never shows a wrong wait.
+            (() => {
+                const { stops, timing, ms } = window.pgDemo;
+                const s = (n) => `${Number((n / 1000).toFixed(2))}s`;
+                const lines = document.getElementById("wait-lines");
+                const range = document.getElementById("wait-range");
+                const show = (i) => {
+                    const stop = stops[i];
+                    const t = timing(stop.ms);
+                    lines.textContent =
+                        `server wait : ${s(stop.ms)}${stop.name === "pg" ? " · plusguard" : ""}\n` +
+                        `bar delay   : ${t.delay}ms\n` +
+                        `bar to 90%  : ${s(t.duration)}\n` +
+                        `bar start   : ${t.easing ? "gentle" : "fast"}`;
+                    document.querySelectorAll("#wait-stops button").forEach((b, j) => b.setAttribute("aria-pressed", String(j === i)));
+                };
+                const save = (i) => {
+                    try {
+                        localStorage.setItem("pg-demo-wait", String(stops[i].ms));
+                    } catch {
+                        // No storage: nothing to keep.
+                    }
+                    location.reload();
+                };
+                document.getElementById("wait-stops").append(
+                    ...stops.map((stop, i) => {
+                        const b = document.createElement("button");
+                        b.type = "button";
+                        b.textContent = stop.name;
+                        b.style.left = `${(i / (stops.length - 1)) * 100}%`;
+                        b.addEventListener("click", () => save(i));
+                        return b;
+                    }),
+                );
+                const now = stops.findIndex((stop) => stop.ms === ms);
+                range.value = String(now);
+                show(now);
+                // While held: show; let go: keep and reload.
+                range.addEventListener("input", () => show(Number(range.value)));
+                range.addEventListener("change", () => save(Number(range.value)));
+            })();
+        </script>
 
         <main>
             <header>
@@ -177,7 +377,8 @@
             <section>
                 <h2>Ready means: loaded, and nothing busy</h2>
                 <p>
-                    These cards wait 1.5 seconds for their "data", marked <code>aria-busy="true"</code> until then.
+                    These cards wait for their "data" — as long as the box at the top left says — marked
+                    <code>aria-busy="true"</code> until then.
                     The bar waits for them too — on the first load and after every page change.
                     <a href="#" id="reload">Load this page again</a> to watch it.
                 </p>
@@ -206,8 +407,8 @@
                     </li>
                     <li>
                         <a href="?page=delay" data-pg-loading-progress-delay="2000">Page 5</a>
-                        <span><code>-delay="2000"</code>: shows only if not ready within 2 s — here it is ready
-                            in 1.5 s, so it never shows</span>
+                        <span><code>-delay="2000"</code>: shows only if not ready within 2 s — with a wait
+                            under 2 s, it never shows</span>
                     </li>
                     <li>
                         <a href="?page=finish" data-pg-loading-progress-finish="1200">Page 6</a>
@@ -267,8 +468,8 @@
 
             initLoadingProgress();
 
-            // The cards' "data" arrives.
-            setTimeout(() => document.getElementById("cards").setAttribute("aria-busy", "false"), 1500);
+            // The cards' "data" arrives — after the made-up wait.
+            setTimeout(() => document.getElementById("cards").setAttribute("aria-busy", "false"), window.pgDemo.ms);
 
             const wait = (ms) => new Promise((r) => setTimeout(r, ms));
             const job = async (ms, timing) => {

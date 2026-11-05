@@ -351,7 +351,9 @@ Back and Forward from the browser's page cache show the page as it was
 left, bar and all: it is cleared on the way back.
 
 See [`examples/static/index.html`](examples/static/index.html) — links
-with each timing, a form, `off`, jobs of your own, and `aria-busy` cards.
+with each timing, a form, `off`, jobs of your own, and `aria-busy` cards
+whose "data" takes as long as a box at the top left says: from 0s to 5s,
+with the bar timed for each. The React example has the same box.
 
 ## Written by loading-progress
 
