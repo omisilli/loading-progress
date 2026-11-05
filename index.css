@@ -1,0 +1,104 @@
+/*
+ * loading-progress — the CSS half: the bar, its creep and its fill.
+ *
+ * Looks, set anywhere above the bar — media queries welcome:
+ *   --pg-loading-progress-height   its thickness. 2px
+ *   --pg-loading-progress-color    the fill: a colour or a gradient.
+ *                                  YouTube's red, turning pink at the tip
+ *   --pg-loading-progress-track    the strip behind the fill. The text
+ *                                  colour at 20% — dark on a light page,
+ *                                  light on a dark one
+ *   --pg-loading-progress-shadow   around the bar. none
+ *   --pg-loading-progress-z        its stacking. 2100
+ *
+ * Times — the defaults here; the attributes (index.ts) override them run
+ * by run. The first load's creep starts before any script, so only these
+ * reach it:
+ *   --pg-loading-progress-delay      before it shows. 0ms
+ *   --pg-loading-progress-duration   to creep to 90%. 10s
+ *   --pg-loading-progress-easing     the creep's curve. Fast, then slow
+ *   --pg-loading-progress-finish     to fill once ready. 300ms
+ *
+ * Written by index.ts — not to be set:
+ *   --pg-loading-progress-from       how far the creep had got when ready
+ *   --pg-loading-progress-elapsed    how long ago the page change began, on
+ *                                    the page before (static sites)
+ */
+
+:where([data-pg-loading-progress=""], [data-pg-loading-progress="true"]) {
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    z-index: var(--pg-loading-progress-z, 2100);
+    height: var(--pg-loading-progress-height, 2px);
+    background: var(--pg-loading-progress-track, color-mix(in srgb, currentColor 20%, transparent));
+    box-shadow: var(--pg-loading-progress-shadow, none);
+    pointer-events: none;
+    opacity: 0;
+}
+
+/* The fill: scaled across from the start edge — on the right in a
+   right-to-left page. */
+:where([data-pg-loading-progress=""], [data-pg-loading-progress="true"])::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--pg-loading-progress-color, linear-gradient(90deg, #ff0033 80%, #ff2791));
+    transform-origin: left;
+    scale: 0 1;
+}
+:where([dir="rtl"]) :where([data-pg-loading-progress=""], [data-pg-loading-progress="true"])::before {
+    transform-origin: right;
+}
+
+/* Loading: shows after the delay, and creeps towards 90% — it never gets
+   further by itself. */
+:where([data-pg-loading-progress-state="loading"]) {
+    opacity: 1;
+    transition: opacity 0s linear calc(var(--pg-loading-progress-delay, 0ms) - var(--pg-loading-progress-elapsed, 0ms));
+}
+:where([data-pg-loading-progress-state="loading"])::before {
+    animation: pg-loading-progress-creep var(--pg-loading-progress-duration, 10s)
+        var(--pg-loading-progress-easing, cubic-bezier(0.1, 0.7, 0.3, 1))
+        calc(var(--pg-loading-progress-delay, 0ms) - var(--pg-loading-progress-elapsed, 0ms)) both;
+}
+
+/* Done: fills from where it was, then fades. */
+:where([data-pg-loading-progress-state="done"]) {
+    opacity: 0;
+    transition: opacity 0.2s ease var(--pg-loading-progress-finish, 300ms);
+}
+:where([data-pg-loading-progress-state="done"])::before {
+    animation: pg-loading-progress-fill var(--pg-loading-progress-finish, 300ms) ease-out both;
+}
+
+@keyframes pg-loading-progress-creep {
+    from {
+        scale: 0 1;
+    }
+    to {
+        scale: 0.9 1;
+    }
+}
+
+@keyframes pg-loading-progress-fill {
+    from {
+        scale: var(--pg-loading-progress-from, 0) 1;
+    }
+    to {
+        scale: 1 1;
+    }
+}
+
+/* Less motion: no creep — the bar stands half full while loading, and is
+   full once ready. */
+@media (prefers-reduced-motion: reduce) {
+    :where([data-pg-loading-progress-state="loading"])::before {
+        animation: none;
+        scale: 0.5 1;
+    }
+    :where([data-pg-loading-progress-state="done"])::before {
+        animation: none;
+        scale: 1 1;
+    }
+}

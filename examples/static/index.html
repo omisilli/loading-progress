@@ -1,0 +1,285 @@
+<!doctype html>
+<!-- Open by double-clicking: both halves load from jsDelivr, not from ../..
+     Pinned to this release, so the page and the code always match.
+     Every link here goes to this same file with another ?query — a page
+     change for the browser, as a static site's next page is. -->
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>loading-progress — example</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.0.0/index.css" />
+        <style>
+            :root {
+                --bg: #f6f6f4;
+                --surface: #ffffff;
+                --fg: #18181b;
+                --muted: #6b6b72;
+                --line: #e4e4e0;
+                --hover: #f0f0ec;
+                --accent: #2f5bea;
+                color-scheme: light dark;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --bg: #111113;
+                    --surface: #1b1b1f;
+                    --fg: #ededef;
+                    --muted: #9a9aa3;
+                    --line: #2c2c31;
+                    --hover: #26262b;
+                    --accent: #7c9cff;
+                }
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+            }
+            body {
+                font:
+                    16px/1.6 system-ui,
+                    -apple-system,
+                    "Segoe UI",
+                    Roboto,
+                    sans-serif;
+                color: var(--fg);
+                background: var(--bg);
+            }
+            code {
+                font:
+                    0.85em/1.4 ui-monospace,
+                    SFMono-Regular,
+                    Menlo,
+                    monospace;
+                background: var(--hover);
+                padding: 0.15em 0.4em;
+                border-radius: 0.35em;
+            }
+            a {
+                color: var(--accent);
+            }
+            main {
+                max-width: 46rem;
+                margin: 0 auto;
+                padding: 3rem 1.25rem 6rem;
+                display: grid;
+                grid-template-columns: minmax(0, 1fr);
+                gap: 2.5rem;
+            }
+            h1 {
+                font-size: 1.6rem;
+                line-height: 1.25;
+            }
+            h2 {
+                font-size: 1.1rem;
+                margin-bottom: 0.5rem;
+            }
+            section > p {
+                color: var(--muted);
+                margin-bottom: 1rem;
+            }
+            .here {
+                display: inline-block;
+                margin-top: 0.75rem;
+                padding: 0.2rem 0.6rem;
+                border-radius: 999px;
+                background: var(--hover);
+                font-size: 0.85rem;
+            }
+            .list {
+                display: grid;
+                gap: 0.5rem;
+                padding: 0;
+                list-style: none;
+            }
+            .list li {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.25rem 0.75rem;
+                align-items: baseline;
+                padding: 0.75rem 1rem;
+                border: 1px solid var(--line);
+                border-radius: 0.75rem;
+                background: var(--surface);
+            }
+            .list li span {
+                color: var(--muted);
+                font-size: 0.9rem;
+            }
+            button,
+            input {
+                font: inherit;
+                color: inherit;
+            }
+            button {
+                padding: 0.45rem 0.9rem;
+                border: 1px solid var(--line);
+                border-radius: 0.6rem;
+                background: var(--surface);
+                cursor: pointer;
+            }
+            button:hover {
+                background: var(--hover);
+            }
+            input {
+                padding: 0.45rem 0.7rem;
+                border: 1px solid var(--line);
+                border-radius: 0.6rem;
+                background: var(--surface);
+                min-width: 0;
+            }
+            .row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                align-items: center;
+            }
+
+            /* Stand-ins for data on its way: plain grey boxes. A real site
+               would use a skeleton — here the point is aria-busy. */
+            .cards {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+                gap: 1rem;
+            }
+            .card {
+                height: 6rem;
+                border-radius: 0.75rem;
+                background: var(--surface);
+                border: 1px solid var(--line);
+                display: grid;
+                place-items: center;
+                color: var(--muted);
+            }
+            [aria-busy="true"] .card {
+                background: var(--hover);
+                border-color: transparent;
+                color: transparent;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- The bar. Written "loading", it runs from the first paint — before
+             any script — and fills once the page is ready. -->
+        <div data-pg-loading-progress data-pg-loading-progress-state="loading"></div>
+
+        <main>
+            <header>
+                <h1>loading-progress</h1>
+                <p>
+                    The thin red line along the top. It cannot know how long anything takes — it creeps, fast
+                    then slow, and fills only once the page is ready.
+                </p>
+                <span class="here" id="here"></span>
+            </header>
+
+            <section>
+                <h2>Ready means: loaded, and nothing busy</h2>
+                <p>
+                    These cards wait 1.5 seconds for their "data", marked <code>aria-busy="true"</code> until then.
+                    The bar waits for them too — on the first load and after every page change.
+                    <a href="#" id="reload">Load this page again</a> to watch it.
+                </p>
+                <div class="cards" id="cards" aria-busy="true" aria-label="Loading cards">
+                    <div class="card">One</div>
+                    <div class="card">Two</div>
+                    <div class="card">Three</div>
+                </div>
+            </section>
+
+            <section>
+                <h2>Links</h2>
+                <p>
+                    A link to another page of this site starts the bar; the next page carries on from where it
+                    was. Timing goes on the link, or on anything above it.
+                </p>
+                <ul class="list">
+                    <li><a href="?page=2">Page 2</a> <span>the defaults</span></li>
+                    <li>
+                        <a href="?page=slow" data-pg-loading-progress-duration="30000">Page 3</a>
+                        <span><code>-duration="30000"</code>: creeps three times slower</span>
+                    </li>
+                    <li>
+                        <a href="?page=linear" data-pg-loading-progress-easing="linear">Page 4</a>
+                        <span><code>-easing="linear"</code>: the same speed all the way to 90%</span>
+                    </li>
+                    <li>
+                        <a href="?page=delay" data-pg-loading-progress-delay="2000">Page 5</a>
+                        <span><code>-delay="2000"</code>: shows only if not ready within 2 s — here it is ready
+                            in 1.5 s, so it never shows</span>
+                    </li>
+                    <li>
+                        <a href="?page=finish" data-pg-loading-progress-finish="1200">Page 6</a>
+                        <span><code>-finish="1200"</code>: fills slowly once ready</span>
+                    </li>
+                    <li data-pg-loading-progress="off">
+                        <a href="?page=off">Page 7</a>
+                        <span>inside <code>data-pg-loading-progress="off"</code>: the click starts nothing — the
+                            next page's own first load still shows its bar</span>
+                    </li>
+                    <li><a href="#links">#links</a> <span>this page: no bar</span></li>
+                    <li><a href="?page=new" target="_blank">New tab</a> <span>a new tab: no bar here</span></li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Forms</h2>
+                <p>
+                    A form sent the browser's own way starts it too, and takes the same attributes — on the
+                    form, or on the button that sends it.
+                </p>
+                <form class="row" data-pg-loading-progress-duration="20000">
+                    <input name="search" placeholder="Search" aria-label="Search" />
+                    <button>Search</button>
+                    <button name="speed" value="quick" data-pg-loading-progress-duration="3000">Quick search</button>
+                </form>
+            </section>
+
+            <section>
+                <h2>Your own jobs</h2>
+                <p>
+                    <code>startLoading()</code> starts it and returns <code>done()</code>. Several at once: it
+                    fills when the last one is done.
+                </p>
+                <div class="row">
+                    <button id="one">A 2-second job</button>
+                    <button id="two">Two jobs: 1 s and 3 s</button>
+                    <button id="long">A 6-second job, linear</button>
+                </div>
+            </section>
+        </main>
+
+        <script type="module">
+            import { initLoadingProgress, startLoading } from "https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.0.0/dist/index.js";
+
+            const page = new URLSearchParams(location.search);
+            document.getElementById("here").textContent = page.has("search")
+                ? `Searched for "${page.get("search")}"${page.get("speed") ? " (quick)" : ""}`
+                : `You are on: ${page.get("page") ?? "page 1"}`;
+
+            document.getElementById("reload").addEventListener("click", (e) => {
+                e.preventDefault();
+                location.reload();
+            });
+
+            initLoadingProgress();
+
+            // The cards' "data" arrives.
+            setTimeout(() => document.getElementById("cards").setAttribute("aria-busy", "false"), 1500);
+
+            const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+            const job = async (ms, timing) => {
+                const done = startLoading(timing);
+                await wait(ms);
+                done();
+            };
+            document.getElementById("one").addEventListener("click", () => job(2000));
+            document.getElementById("two").addEventListener("click", () => {
+                job(1000);
+                job(3000);
+            });
+            document.getElementById("long").addEventListener("click", () => job(6000, { duration: 6000, easing: "linear" }));
+        </script>
+    </body>
+</html>
