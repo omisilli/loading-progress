@@ -58,8 +58,11 @@ So the bar's position means nothing; **full means ready**. "Ready" is:
 | A job of your own             | Its `done()` is called — every one of them, if several run at once                          |
 
 Each case waits for all of them: a page change while your own job runs
-fills when both are over. If something stays `aria-busy` for 15 seconds,
-the bar fills anyway — it never creeps for ever.
+fills when both are over. However long that takes — a slow server, a big
+page — the bar waits at 90% (see [The duration is not the page's
+time](#the-duration-is-not-the-pages-time)). Only `aria-busy` has a
+limit: left on for 15 seconds after the page has arrived, it no longer
+holds the bar back.
 
 ## The first load
 
@@ -130,31 +133,66 @@ script starts.
 <nav data-pg-loading-progress-delay="300">…</nav>
 ```
 
-No delay by default, as on YouTube — its bar shows at once, within a frame
-of the click. The creep is past half in half a second and at three
-quarters in one, so a page change ends while the bar is still clearly
-moving:
+### Always, or only when slow — the delay
 
-| After        | 0.2s | 0.5s | 1s  | 2s  | 3s  |
-| ------------ | ---- | ---- | --- | --- | --- |
-| The defaults | 31%  | 55%  | 74% | 87% | 90% |
+The one choice to make for a site. Two ways to run the bar:
 
-For a page you know is slow, a longer `duration` keeps it from sitting at
-90%.
+| `delay`              | The bar shows                                            | Fits                                                         |
+| -------------------- | -------------------------------------------------------- | ------------------------------------------------------------ |
+| `0` — the default    | On every page change, at once — within a frame of the click | Pages that take most of a second or more, as on YouTube: the bar is the answer to the click |
+| `200`, `300` …       | Only when a change takes longer than that; never before  | A fast site — Next prefetches its links and pages change in a fifth of a second: the bar is a warning that this one is slow |
 
-### A fast site
+**With no delay on a fast site**, the bar flashes on every click — in,
+full, out in under half a second — and says nothing: the page was there
+anyway. **With a delay**, it stays away from the fast changes and shows
+only when something holds the page up: a slow network, a phone, a heavy
+page, a busy server. Then it means something.
 
-Where pages change in a fifth of a second or less — Next prefetches its
-links — a bar that flashes on every click says nothing. A `delay` keeps it
-away from those: it shows only when a change takes longer, on a slow
-network or a heavy page. YouTube does not use one; its changes take most
-of a second. As CSS variables, so the first load has it too:
+Measure your own site before you choose. A change that ends just after the
+delay shows the bar briefly; if many of yours land there, a little more
+delay keeps them quiet. Much beyond 300ms, the bar starts to feel late
+when it does show.
+
+For every page change and the first load alike, set it as a CSS variable
+(see [For the first load](#for-the-first-load)):
 
 ```css
 [data-pg-loading-progress] {
     --pg-loading-progress-delay: 200ms;
 }
 ```
+
+For one link or one part of the page, the attribute:
+
+```html
+<a href="/dashboard" data-pg-loading-progress-delay="0">Dashboard — always show</a>
+```
+
+### The duration is not the page's time
+
+`duration` is how long the creep takes to reach 90% — not how long the
+page takes. Nobody knows that (see [How long? Nobody
+knows](#how-long-nobody-knows)). The default, 3 seconds:
+
+| After        | 0.2s | 0.5s | 1s  | 2s  | 3s  | 10s |
+| ------------ | ---- | ---- | --- | --- | --- | --- |
+| The defaults | 31%  | 55%  | 74% | 87% | 90% | 90% |
+
+**When the server is slow** — the page takes 10 seconds — the bar reaches
+90% at 3 seconds and **stops there until the page is really ready**. It
+does not fill by itself and does not go back; it fills only when the
+page is there. A bar standing still at 90% is honest — the page is not
+ready — but it looks stuck. For a page you know is slow, a longer
+`duration` keeps it moving all the way:
+
+```html
+<a href="/reports/yearly" data-pg-loading-progress-duration="15000">The yearly report</a>
+```
+
+A page that never arrives — the server does not answer — leaves the bar at
+90% until the browser gives up and shows its own error page. The one time
+limit: once a page has arrived, something left `aria-busy` for 15 seconds
+no longer holds the bar back.
 
 ### For the first load
 
