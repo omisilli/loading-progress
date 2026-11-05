@@ -10,7 +10,7 @@ from HTML attributes; Next and static sites alike; no dependencies.
 ```
 
 ```sh
-npm install github:omisilli/loading-progress#v1.2.0
+npm install github:omisilli/loading-progress#v1.3.0
 ```
 
 ```ts
@@ -29,14 +29,14 @@ Or the CSS from CSS, which lets you pick the cascade layer:
 ### Without a build step
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.2.0/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.3.0/index.css" />
 <script type="module">
-    import { initLoadingProgress } from "https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.2.0/dist/index.js";
+    import { initLoadingProgress } from "https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.3.0/dist/index.js";
     initLoadingProgress();
 </script>
 ```
 
-Pin the version (`@v1.2.0`) on a live site. A pinned URL never changes;
+Pin the version (`@v1.3.0`) on a live site. A pinned URL never changes;
 `@1` follows the newest 1.x release.
 
 ## How long? Nobody knows
@@ -116,7 +116,7 @@ script starts.
 | Attribute                           | Default            | What                                                           |
 | ----------------------------------- | ------------------ | -------------------------------------------------------------- |
 | `data-pg-loading-progress-delay`    | `0`                | ms before it shows. Ready sooner: it never shows               |
-| `data-pg-loading-progress-duration` | `3000`             | ms to creep to 90%                                             |
+| `data-pg-loading-progress-duration` | `2000`             | ms to creep to 90%                                             |
 | `data-pg-loading-progress-easing`   | fast, then slow    | The creep's curve: `linear`, `ease-out`, `cubic-bezier(…)`     |
 | `data-pg-loading-progress-finish`   | `200`              | ms to fill once ready (the fade, 0.2s, follows)                |
 
@@ -126,7 +126,7 @@ script starts.
     <input name="q" />
     <button>Search</button>
     <!-- The button's own, for this button. -->
-    <button name="quick" value="1" data-pg-loading-progress-duration="1500">Quick search</button>
+    <button name="quick" value="1" data-pg-loading-progress-duration="1000">Quick search</button>
 </form>
 
 <!-- Every link in the menu: only if it takes longer than 0.3s. -->
@@ -172,14 +172,14 @@ For one link or one part of the page, the attribute:
 
 `duration` is how long the creep takes to reach 90% — not how long the
 page takes. Nobody knows that (see [How long? Nobody
-knows](#how-long-nobody-knows)). The default, 3 seconds:
+knows](#how-long-nobody-knows)). The default, 2 seconds:
 
-| After        | 0.2s | 0.5s | 1s  | 2s  | 3s  | 10s |
-| ------------ | ---- | ---- | --- | --- | --- | --- |
-| The defaults | 31%  | 55%  | 74% | 87% | 90% | 90% |
+| After        | 0.2s | 0.5s | 1s  | 1.5s | 2s  | 10s |
+| ------------ | ---- | ---- | --- | ---- | --- | --- |
+| The defaults | 41%  | 66%  | 83% | 89%  | 90% | 90% |
 
 **When the server is slow** — the page takes 10 seconds — the bar reaches
-90% at 3 seconds and **stops there until the page is really ready**. It
+90% at 2 seconds and **stops there until the page is really ready**. It
 does not fill by itself and does not go back; it fills only when the
 page is there. A bar standing still at 90% is honest — the page is not
 ready — but it looks stuck. For a page you know is slow, a longer
@@ -376,7 +376,7 @@ Set anywhere above the bar — media queries welcome.
 | `--pg-loading-progress-shadow`  | `none`                                    | Around the bar                        |
 | `--pg-loading-progress-z`       | `2100`                                    | Its stacking                          |
 | `--pg-loading-progress-delay`   | `0ms`                                     | See [Timing](#timing)                 |
-| `--pg-loading-progress-duration` | `3s`                                     |                                       |
+| `--pg-loading-progress-duration` | `2s`                                     |                                       |
 | `--pg-loading-progress-easing`  | `cubic-bezier(0.1, 0.7, 0.3, 1)`          |                                       |
 | `--pg-loading-progress-finish`  | `200ms`                                   |                                       |
 

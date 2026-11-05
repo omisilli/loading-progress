@@ -15,7 +15,7 @@
  * by run. The first load's creep starts before any script, so only these
  * reach it:
  *   --pg-loading-progress-delay      before it shows. 0ms
- *   --pg-loading-progress-duration   to creep to 90%. 3s
+ *   --pg-loading-progress-duration   to creep to 90%. 2s
  *   --pg-loading-progress-easing     the creep's curve. Fast, then slow
  *   --pg-loading-progress-finish     to fill once ready. 200ms
  *
@@ -61,7 +61,7 @@
         calc(var(--pg-loading-progress-delay, 0ms) - var(--pg-loading-progress-elapsed, 0ms)) backwards;
 }
 :where([data-pg-loading-progress-state="loading"])::before {
-    animation: pg-loading-progress-creep var(--pg-loading-progress-duration, 3s)
+    animation: pg-loading-progress-creep var(--pg-loading-progress-duration, 2s)
         var(--pg-loading-progress-easing, cubic-bezier(0.1, 0.7, 0.3, 1))
         calc(var(--pg-loading-progress-delay, 0ms) - var(--pg-loading-progress-elapsed, 0ms)) both;
 }
