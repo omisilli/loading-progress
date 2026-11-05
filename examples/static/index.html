@@ -8,7 +8,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>loading-progress — example</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.0.0/index.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.1.0/index.css" />
         <style>
             :root {
                 --bg: #f6f6f4;
@@ -188,7 +188,7 @@
                 </div>
             </section>
 
-            <section>
+            <section id="links">
                 <h2>Links</h2>
                 <p>
                     A link to another page of this site starts the bar; the next page carries on from where it
@@ -197,8 +197,8 @@
                 <ul class="list">
                     <li><a href="?page=2">Page 2</a> <span>the defaults</span></li>
                     <li>
-                        <a href="?page=slow" data-pg-loading-progress-duration="30000">Page 3</a>
-                        <span><code>-duration="30000"</code>: creeps three times slower</span>
+                        <a href="?page=slow" data-pg-loading-progress-duration="15000">Page 3</a>
+                        <span><code>-duration="15000"</code>: creeps three times slower</span>
                     </li>
                     <li>
                         <a href="?page=linear" data-pg-loading-progress-easing="linear">Page 4</a>
@@ -223,13 +223,14 @@
                 </ul>
             </section>
 
-            <section>
+            <section id="forms">
                 <h2>Forms</h2>
                 <p>
                     A form sent the browser's own way starts it too, and takes the same attributes — on the
-                    form, or on the button that sends it.
+                    form, or on the button that sends it. It opens a new page, which starts at the top — or,
+                    with <code>action="#forms"</code> as here, at this form.
                 </p>
-                <form class="row" data-pg-loading-progress-duration="20000">
+                <form class="row" action="#forms" data-pg-loading-progress-duration="15000">
                     <input name="search" placeholder="Search" aria-label="Search" />
                     <button>Search</button>
                     <button name="speed" value="quick" data-pg-loading-progress-duration="3000">Quick search</button>
@@ -239,8 +240,9 @@
             <section>
                 <h2>Your own jobs</h2>
                 <p>
-                    <code>startLoading()</code> starts it and returns <code>done()</code>. Several at once: it
-                    fills when the last one is done.
+                    <code>startLoading()</code> starts it and returns <code>done()</code> — for a button that
+                    fetches data, "load more", a filter. No page change, so the page stays where it is. Several
+                    at once: it fills when the last one is done.
                 </p>
                 <div class="row">
                     <button id="one">A 2-second job</button>
@@ -251,7 +253,7 @@
         </main>
 
         <script type="module">
-            import { initLoadingProgress, startLoading } from "https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.0.0/dist/index.js";
+            import { initLoadingProgress, startLoading } from "https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.1.0/dist/index.js";
 
             const page = new URLSearchParams(location.search);
             document.getElementById("here").textContent = page.has("search")

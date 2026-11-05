@@ -10,7 +10,7 @@ from HTML attributes; Next and static sites alike; no dependencies.
 ```
 
 ```sh
-npm install github:omisilli/loading-progress#v1.0.0
+npm install github:omisilli/loading-progress#v1.1.0
 ```
 
 ```ts
@@ -29,14 +29,14 @@ Or the CSS from CSS, which lets you pick the cascade layer:
 ### Without a build step
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.0.0/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.1.0/index.css" />
 <script type="module">
-    import { initLoadingProgress } from "https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.0.0/dist/index.js";
+    import { initLoadingProgress } from "https://cdn.jsdelivr.net/gh/omisilli/loading-progress@v1.1.0/dist/index.js";
     initLoadingProgress();
 </script>
 ```
 
-Pin the version (`@v1.0.0`) on a live site. A pinned URL never changes;
+Pin the version (`@v1.1.0`) on a live site. A pinned URL never changes;
 `@1` follows the newest 1.x release.
 
 ## How long? Nobody knows
@@ -113,13 +113,13 @@ script starts.
 | Attribute                           | Default            | What                                                           |
 | ----------------------------------- | ------------------ | -------------------------------------------------------------- |
 | `data-pg-loading-progress-delay`    | `0`                | ms before it shows. Ready sooner: it never shows               |
-| `data-pg-loading-progress-duration` | `10000`            | ms to creep to 90%                                             |
+| `data-pg-loading-progress-duration` | `5000`             | ms to creep to 90%                                             |
 | `data-pg-loading-progress-easing`   | fast, then slow    | The creep's curve: `linear`, `ease-out`, `cubic-bezier(…)`     |
-| `data-pg-loading-progress-finish`   | `300`              | ms to fill once ready (the fade, 0.2s, follows)                |
+| `data-pg-loading-progress-finish`   | `200`              | ms to fill once ready (the fade, 0.2s, follows)                |
 
 ```html
 <!-- A search that takes a while: a slower, steady creep. -->
-<form action="/search" data-pg-loading-progress-duration="20000" data-pg-loading-progress-easing="linear">
+<form action="/search" data-pg-loading-progress-duration="15000" data-pg-loading-progress-easing="linear">
     <input name="q" />
     <button>Search</button>
     <!-- The button's own, for this button. -->
@@ -130,10 +130,18 @@ script starts.
 <nav data-pg-loading-progress-delay="300">…</nav>
 ```
 
-The defaults are YouTube's: no delay — its bar shows at once, within a
-frame of the click — and a creep that is at about 10% after 0.2s. Most
-page changes are over long before the creep slows down. A `delay` keeps
-the bar away from fast changes altogether; YouTube does not use one.
+No delay by default, as on YouTube — its bar shows at once, within a frame
+of the click. The creep is past half in a second and at about 83% after
+2.5 seconds, so a usual page change ends while the bar is still clearly
+moving:
+
+| After        | 0.2s | 0.5s | 1s  | 2.5s | 4s  |
+| ------------ | ---- | ---- | --- | ---- | --- |
+| The defaults | 21%  | 41%  | 60% | 83%  | 89% |
+
+For a page you know is slow, a longer `duration` keeps it from sitting at
+90%. A `delay` keeps the bar away from fast changes altogether; YouTube
+does not use one.
 
 ### For the first load
 
@@ -166,6 +174,21 @@ The same four timings, in milliseconds:
 
 ```ts
 const done = startLoading({ duration: 15000, easing: "linear", delay: 200, finish: 500 });
+```
+
+Nothing changes page, so nothing scrolls: the page stays where it is —
+use it for a button that fetches data, "load more", a filter, a form your
+script sends. In React, the same around a state update:
+
+```tsx
+async function loadMore() {
+    const done = startLoading();
+    try {
+        setVideos(await fetchVideos());
+    } finally {
+        done();
+    }
+}
 ```
 
 Several at once — the bar fills when the last `done()` is called. Calling a
@@ -243,6 +266,15 @@ skeletons, so the bar keeps creeping until the streamed content replaces
 them. A bare `data-pg-loading-progress` in JSX is written `"true"`, which
 counts as the bar.
 
+A new route opens at the top — Next's choice, not the bar's. For a change
+that stays on the same page (a search, a filter, a page number), keep the
+scroll position with `scroll={false}`; the bar runs either way:
+
+```tsx
+<Link href="?page=2" scroll={false}>Next page</Link>
+router.replace(`?q=${q}`, { scroll: false });
+```
+
 Next's `<Form>` sends itself — it calls `preventDefault` and changes the
 route — so it does not start the bar. If you want one, call
 `startLoading()` in its `onSubmit` and its `done()` once the results are
@@ -257,6 +289,11 @@ the browser leaves the page; the next page, written with
 `data-pg-loading-progress-state="loading"` like every page, **carries on**
 where the bar was, with the link's timing — the start is handed over in
 `sessionStorage`. Without storage (some private modes) it starts over.
+
+A link or a form opens a new page, which starts at the top — or at its
+`#hash`: `<form action="#results">` comes back to the results. To stay put
+without a new page, send the form from your script and use
+`startLoading()`.
 
 Back and Forward from the browser's page cache show the page as it was
 left, bar and all: it is cleared on the way back.
@@ -288,9 +325,9 @@ Set anywhere above the bar — media queries welcome.
 | `--pg-loading-progress-shadow`  | `none`                                    | Around the bar                        |
 | `--pg-loading-progress-z`       | `2100`                                    | Its stacking                          |
 | `--pg-loading-progress-delay`   | `0ms`                                     | See [Timing](#timing)                 |
-| `--pg-loading-progress-duration` | `10s`                                    |                                       |
+| `--pg-loading-progress-duration` | `5s`                                     |                                       |
 | `--pg-loading-progress-easing`  | `cubic-bezier(0.1, 0.7, 0.3, 1)`          |                                       |
-| `--pg-loading-progress-finish`  | `300ms`                                   |                                       |
+| `--pg-loading-progress-finish`  | `200ms`                                   |                                       |
 
 With reduced motion asked for, there is no creep: the bar stands half full
 while loading, and is full once ready.

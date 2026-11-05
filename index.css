@@ -15,9 +15,9 @@
  * by run. The first load's creep starts before any script, so only these
  * reach it:
  *   --pg-loading-progress-delay      before it shows. 0ms
- *   --pg-loading-progress-duration   to creep to 90%. 10s
+ *   --pg-loading-progress-duration   to creep to 90%. 5s
  *   --pg-loading-progress-easing     the creep's curve. Fast, then slow
- *   --pg-loading-progress-finish     to fill once ready. 300ms
+ *   --pg-loading-progress-finish     to fill once ready. 200ms
  *
  * Written by index.ts — not to be set:
  *   --pg-loading-progress-from       how far the creep had got when ready
@@ -58,7 +58,7 @@
     transition: opacity 0s linear calc(var(--pg-loading-progress-delay, 0ms) - var(--pg-loading-progress-elapsed, 0ms));
 }
 :where([data-pg-loading-progress-state="loading"])::before {
-    animation: pg-loading-progress-creep var(--pg-loading-progress-duration, 10s)
+    animation: pg-loading-progress-creep var(--pg-loading-progress-duration, 5s)
         var(--pg-loading-progress-easing, cubic-bezier(0.1, 0.7, 0.3, 1))
         calc(var(--pg-loading-progress-delay, 0ms) - var(--pg-loading-progress-elapsed, 0ms)) both;
 }
@@ -66,10 +66,10 @@
 /* Done: fills from where it was, then fades. */
 :where([data-pg-loading-progress-state="done"]) {
     opacity: 0;
-    transition: opacity 0.2s ease var(--pg-loading-progress-finish, 300ms);
+    transition: opacity 0.2s ease var(--pg-loading-progress-finish, 200ms);
 }
 :where([data-pg-loading-progress-state="done"])::before {
-    animation: pg-loading-progress-fill var(--pg-loading-progress-finish, 300ms) ease-out both;
+    animation: pg-loading-progress-fill var(--pg-loading-progress-finish, 200ms) ease-out both;
 }
 
 @keyframes pg-loading-progress-creep {

@@ -1,6 +1,6 @@
 {
     "name": "@plusguard/loading-progress",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "A thin loading bar along the top of the page, as YouTube shows: from the first paint, on every page change, and for your own jobs — filling only once the page is ready, skeletons gone. HTML attributes for timing, for Next and static sites alike. Zero dependencies. CSS included.",
     "type": "module",
     "main": "./dist/index.js",

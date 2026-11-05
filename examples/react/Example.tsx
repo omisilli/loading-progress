@@ -50,7 +50,7 @@ export function Links() {
                     <Link href="/videos">Videos</Link> — the defaults
                 </li>
                 <li>
-                    <Link href="/reports" data-pg-loading-progress-duration="30000">
+                    <Link href="/reports" data-pg-loading-progress-duration="15000">
                         Reports
                     </Link>{" "}
                     — a slow page: a slower creep
@@ -66,6 +66,15 @@ export function Links() {
                         Settings
                     </Link>{" "}
                     — shows only if it takes longer than 0.3s
+                </li>
+                <li>
+                    {/* The same page, another query: the bar runs, and
+                        scroll={false} keeps the page where it is — a new
+                        route opens at the top otherwise (Next's choice). */}
+                    <Link href="?page=2" scroll={false}>
+                        Page 2 of the results
+                    </Link>{" "}
+                    — stays where you are
                 </li>
                 <li data-pg-loading-progress="off">
                     <a href="/export.csv">Export</a> — a file served as a download: no bar
