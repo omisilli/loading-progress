@@ -37,8 +37,9 @@ const TIMING = {
     finish: "data-pg-loading-progress-finish",
 } as const;
 
-/* How long to wait for "ready" before filling anyway — an aria-busy that
-   never clears must not leave the bar creeping for ever. */
+/* How long to wait for "ready" — the load event, no aria-busy — before
+   filling anyway: an image that never finishes, or an aria-busy that never
+   clears, must not hold the bar for ever. */
 const READY_TIMEOUT = 15000;
 /* Where a static site's page change is handed to the next page. */
 const STORE = "pg-loading-progress";

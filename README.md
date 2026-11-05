@@ -58,11 +58,12 @@ So the bar's position means nothing; **full means ready**. "Ready" is:
 | A job of your own             | Its `done()` is called — every one of them, if several run at once                          |
 
 Each case waits for all of them: a page change while your own job runs
-fills when both are over. However long that takes — a slow server, a big
-page — the bar waits at 90% (see [The duration is not the page's
-time](#the-duration-is-not-the-pages-time)). Only `aria-busy` has a
-limit: left on for 15 seconds after the page has arrived, it no longer
-holds the bar back.
+fills when both are over. However long the change itself takes — a slow
+server, a big page — the bar waits at 90% (see [The duration is not the
+page's time](#the-duration-is-not-the-pages-time)). After that, the wait
+for `load` and `aria-busy` has a limit: 15 seconds. An image that never
+finishes, or an `aria-busy` left on by mistake, does not hold the bar for
+ever.
 
 ## The first load
 
@@ -99,7 +100,7 @@ Not on anything inside `data-pg-loading-progress="off"` either — on the
 link, the form, or anything above them:
 
 ```html
-<a href="/report.pdf" data-pg-loading-progress="off">The report</a>
+<a href="/export.csv" data-pg-loading-progress="off">Export</a>
 ```
 
 Use it for a link the browser downloads without leaving the page (a file
@@ -191,8 +192,8 @@ ready — but it looks stuck. For a page you know is slow, a longer
 
 A page that never arrives — the server does not answer — leaves the bar at
 90% until the browser gives up and shows its own error page. The one time
-limit: once a page has arrived, something left `aria-busy` for 15 seconds
-no longer holds the bar back.
+limit comes after: once the page has arrived, waiting for `load` and
+`aria-busy` stops after 15 seconds.
 
 ### For the first load
 
@@ -312,9 +313,9 @@ export function LoadingProgress() {
 }
 ```
 
-The new route's `loading.tsx` or `<Suspense>` fallbacks are `aria-busy`
-skeletons, so the bar keeps creeping until the streamed content replaces
-them. A bare `data-pg-loading-progress` in JSX is written `"true"`, which
+Give the new route's `loading.tsx` or `<Suspense>` fallbacks
+`aria-busy="true"`, as skeletons have, and the bar does not fill until the
+streamed content has replaced them. A bare `data-pg-loading-progress` in JSX is written `"true"`, which
 counts as the bar.
 
 A new route opens at the top — Next's choice, not the bar's. For a change
