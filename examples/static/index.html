@@ -396,31 +396,35 @@
                     was. Timing goes on the link, or on anything above it.
                 </p>
                 <ul class="list">
+                    <li>
+                        <a href="index.html">Page 1</a>
+                        <span>this page, loaded afresh — no <code>?page</code>, no <code>#hash</code></span>
+                    </li>
                     <li><a href="?page=2">Page 2</a> <span>the defaults</span></li>
                     <li>
-                        <a href="?page=slow" data-pg-loading-progress-duration="6000">Page 3</a>
+                        <a href="?page=3" data-pg-loading-progress-duration="6000">Page 3</a>
                         <span><code>-duration="6000"</code>: creeps three times slower</span>
                     </li>
                     <li>
-                        <a href="?page=linear" data-pg-loading-progress-easing="linear">Page 4</a>
+                        <a href="?page=4" data-pg-loading-progress-easing="linear">Page 4</a>
                         <span><code>-easing="linear"</code>: the same speed all the way to 90%</span>
                     </li>
                     <li>
-                        <a href="?page=delay" data-pg-loading-progress-delay="2000">Page 5</a>
+                        <a href="?page=5" data-pg-loading-progress-delay="2000">Page 5</a>
                         <span><code>-delay="2000"</code>: shows only if not ready within 2 s — with a wait
                             under 2 s, it never shows</span>
                     </li>
                     <li>
-                        <a href="?page=finish" data-pg-loading-progress-finish="1200">Page 6</a>
+                        <a href="?page=6" data-pg-loading-progress-finish="1200">Page 6</a>
                         <span><code>-finish="1200"</code>: fills slowly once ready</span>
                     </li>
                     <li data-pg-loading-progress="off">
-                        <a href="?page=off">Page 7</a>
+                        <a href="?page=7">Page 7</a>
                         <span>inside <code>data-pg-loading-progress="off"</code>: the click starts nothing — the
                             next page's own first load still shows its bar</span>
                     </li>
                     <li><a href="#links">#links</a> <span>this page: no bar</span></li>
-                    <li><a href="?page=new" target="_blank">New tab</a> <span>a new tab: no bar here</span></li>
+                    <li><a href="?page=8" target="_blank">Page 8</a> <span>in a new tab: no bar here</span></li>
                 </ul>
             </section>
 
@@ -459,7 +463,7 @@
             const page = new URLSearchParams(location.search);
             document.getElementById("here").textContent = page.has("search")
                 ? `Searched for "${page.get("search")}"${page.get("speed") ? " (quick)" : ""}`
-                : `You are on: ${page.get("page") ?? "page 1"}`;
+                : `You are on: Page ${page.get("page") ?? 1}`;
 
             document.getElementById("reload").addEventListener("click", (e) => {
                 e.preventDefault();
